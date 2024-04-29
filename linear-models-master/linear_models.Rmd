@@ -1,0 +1,457 @@
+---
+title: "Linear Models"
+author: "Saritha Kodikara"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+    toc_depth: '3'
+  html_notebook:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+editor_options: 
+  markdown: 
+    wrap: 72
+
+---
+
+```{=html}
+<!--
+Show / hide answers to exercises.
+Code adapted from: https://chrisbeeley.net/?p=1104
+-->
+```
+```{=html}
+<script>
+function myFunction(id) {
+    var x = document.getElementById(id);
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+}
+</script>
+```
+```{=html}
+<style>
+div .info {
+  margin: auto;
+  background-color: #EAF0FB;
+  width: 95%;
+  padding: 10px;
+}
+</style>
+```
+```{r setup, include=FALSE}
+# Smaller images for pdf
+# knitr::opts_chunk$set(out.width="50%")
+options(width=80)
+```
+
+# 1. Introduction to linear models
+
+Linear models are powerful statistical techniques for modelling relationships between variables (e.g genes). Biological datasets are often rich with covariates that can impact the response variable. Linear models can reveal intricate relationships in these data. Linear mixed models, extending traditional linear models can address unwanted variation commonly encountered because of complex study designs.
+
+The workshop materials drew inspiration from the [r-linear-abacbs2018](https://monashbioinformaticsplatform.github.io/r-linear-abacbs2018/topics/linear_models_abacbs2018.html) workshop conducted by [Monash Bioinformatics](https://github.com/MonashBioinformaticsPlatform), as well as the [QCBS R workshops](https://r.qcbs.ca/workshop04/pres-en/workshop04-pres-en.html#1) conducted by [Quebec Centre for Biodiversity](https://r.qcbs.ca/). 
+
+
+##  Loading packages
+
+```{r message=FALSE}
+# Install tidyverse package using CRAN
+# install.packages(c("tidyverse", "nlme", "ggpubr", "MuMIn"))
+
+# Install edgeR and limma packages using BiocManager
+#if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  #install.packages("BiocManager")
+#}
+#BiocManager::install(c("edgeR","limma"))
+
+library(tidyverse)  # working with data frames, plotting
+library(edgeR)      # cpm, etc -- RNA-Seq normalization
+library(limma)      # lmFit, etc -- fitting many models
+library(nlme)       # lme
+library(ggpubr)     #ggqqplot
+library(MuMIn)      #AICc
+```
+
+##  Data used
+
+Tooth growth in mouse embryos is studied using RNA-Seq. The RNA expression levels of several genes are examined in the cells that form the upper and lower first molars, in eight individual mouse embryos that have been dissected after different times of embryo development. The measurements are in terms of “Reads Per Million”, essentially the fraction of RNA in each sample belonging to each gene, times 1 million. This data was extracted from [ARCHS4](https://amp.pharm.mssm.edu/archs4/).
+
+# 2. Simple linear regression (Single numerical predictor)
+
+## Load the data
+
+The files we will use are csv comma-separated, so we will use the
+`read_csv()` function from the tidyverse. 
+
+**Your turn 2.1:** Download the data.zip file
+[here](https://melbintgen.github.io/intro-models/data.zip). Unzip the file
+and **store the content in the `data` folder in your working
+directory**.
+
+For the first part of the workshop, we will use the counts file called `teeth.csv` stored in the data
+folder. The path to the file should be
+`data/teeth.csv`. This file includes count information for three genes, which we will use up to Section 5.
+
+**Your turn 2.2:** Load the data into your R working directory. The contents of the counts file will be stored in an **object** named `teeth`. Afterwards, explore the `gene_smoc1` across different days using a scatter plot.
+
+```{r message=FALSE}
+# read in counts file
+teeth <- read_csv("data/teeth.csv")
+```
+
+```{r fig1, fig.width=4,fig.height=4}
+
+ggplot(teeth,aes(x=day, y=gene_smoc1))+
+  geom_point()+theme_bw()+ylab("Smoc1")
+
+```
+
+#### Exercise 1: Interpretation
+
+Interpret the scatter plot created above.
+
+<button onclick="myFunction(&#39;q1&#39;)">
+
+Show solutions
+
+</button>
+
+::: {#q1 style="display:none"}
+
+#### Answer
+
+The scatter plot suggests a non-linear relationship between the smoc1 gene counts and the number of days. This means that the smoc1 gene counts do not increase or decrease proportionally with the number of days. Instead, the relationship is more like a quadratic polynomial.
+:::
+
+<!-- end solutions -->
+
+
+## Fitting a simple linear relationship
+
+Let's fit a simple linear regression model using the `smoc1` gene counts as the dependent variable and the number of days as the independent variable. We can then explore the residual plots to identify any potential violations of the model assumptions.
+
+
+**Your turn 2.3:** Run the following command line. From the output, identify if there are any assumption violations.
+
+```{r message=FALSE}
+# fitting a simple linear regression
+smoc1_fit <- lm(gene_smoc1 ~ day, data=teeth)
+summary(smoc1_fit)
+```
+
+```{r fig2, fig.width=5,fig.height=5}
+par(mfrow=c(2,2))
+plot(smoc1_fit)
+```
+
+We can observe a clear violation of linearity in the plot of residuals versus fitted values. To account for this, you might consider including a squared value of days in the linear model to see if this improves the residuals.
+
+```{r message=FALSE, results=FALSE}
+# fitting a simple linear regression
+day2<-teeth$day^2
+smoc1_fit_sq <- lm(gene_smoc1 ~ day+day2, data=teeth)
+summary(smoc1_fit_sq)
+```
+```{r fig3, eval=FALSE}
+par(mfrow=c(2,2))
+plot(smoc1_fit_sq)
+```
+
+**Your turn 2.4:** Examine the code above, run and then look at the residual plots to see if the modification helped.
+
+#### Exercise 2: Log2 transformation of gene counts
+
+(A) A common transformation used in RNA-seq models is the log2 transformation. Write your own R code to apply this transformation to the smoc1 gene counts.
+(B) Explore if the transformation improves our previous results.
+
+<button onclick="myFunction(&#39;q2&#39;)">
+
+Show solutions
+
+</button>
+
+::: {#q2 style="display:none"}
+
+#### Answer
+(A)
+```{r}
+smoc1_fit_l2 <- lm(log2(gene_smoc1) ~ day+day2, data=teeth)
+summary(smoc1_fit_l2)
+```
+
+(B)
+```{r fig2.B, fig.width=5,fig.height=5}
+par(mfrow=c(2,2))
+plot(smoc1_fit_l2)
+```
+
+:::
+
+Here onwards we will use log2 transformation on all gene counts before fitting any model.
+
+<!-- end solutions -->
+
+## Summary
+
+In Section 2, we conducted an exploration of simple linear regression using the `smoc1` gene from our dataset. Simple linear regression employs a single numerical independent variable to explain a corresponding numerical dependent variable. Additionally, we examined how data transformation can enhance the assumptions of our model.
+
+# 3. Analysis of Variance (ANOVA) (Single categorical predictor)
+
+Let's fit an ANOVA model using the log2 transformed `gene_pou3f3` gene counts as the dependent variable, and the tooth’s position (upper or lower) as the independent variable. Note that in this case, the tooth variable has only two groups (i.e., upper and lower). In such situations, you could use a t-test to compare the two groups. However, we will use ANOVA to explore these two groups to demonstrate the use of ANOVA.
+
+**Your turn 3.1:** First, you will explore the scatter plot and convert the `tooth` variable into a factor variable. Before fitting the ANOVA model, examine the QQ plot to check the normality of the dependent variable.
+
+```{r}
+# converting to a factor
+teeth$tooth <- factor(teeth$tooth, c("lower","upper"))
+```
+
+```{r fig4, fig.width=5,fig.height=5}
+ggplot(teeth, aes(x=tooth, y=log2(gene_pou3f3))) + 
+  geom_point()+
+  theme_bw()
+```
+
+```{r fig5, fig.width=6,fig.height=5}
+ggqqplot(teeth, x="log2(gene_pou3f3)", facet.by = "tooth")
+```
+
+We can run our ANOVA in R using different functions. The most basic and common functions we can use are `aov()` and `lm()`. Because ANOVA is a type of linear model, we can use the `lm()` function. 
+
+**Your turn 3.2:** Let's see what `lm()` produces for log2 transformed `gene_pou3f3`.
+
+```{r}
+#ANOVA using lm function
+aov.lm_pou3f3 <- lm(log2(gene_pou3f3) ~ tooth, data=teeth)
+summary(aov.lm_pou3f3)
+```
+
+The F-statistic is the test statistic for ANOVA and is a combination of the sums of squares described above. The associated p-value can help provide a significance interepretation on the F-statistic. That is, a $p-value<0.05$ tells us that at least one group mean differs from another at the  $\alpha=0.05$ level of significance. 
+
+**Your turn 3.3:** Let's explore `aov()` for log2 transformed `gene_pou3f3`.
+
+```{r}
+# Compute the analysis of variance
+aov_pou3f3 <- aov(log2(gene_pou3f3) ~ tooth, data=teeth)
+# Summary of the analysis
+summary(aov_pou3f3)
+```
+
+When using the `aov()` function, if the p-value is less than 0.05, you would want to identify which groups significantly differ from each other. To do this, you could perform multiple comparisons. This is an analysis conducted after ANOVA that helps us quantify the differences between groups. A very common test for this purpose is Tukey’s Honest Significant Differences (HSD). The Tukey HSD procedure conducts a pairwise comparison of all possible combinations of groups, testing for significant differences between their means, while adjusting the p-value.
+
+**Your turn 3.4:** Let's explore multiple comparisons on the `aov_pou3f3` model.
+
+```{r}
+TukeyHSD(aov_pou3f3)
+```
+
+## Summary
+
+In Section 3, we investigated ANOVA using the `pou3f3` gene from our dataset. ANOVA is utilized to compare three or more groups and thus, it employs a single categorical independent variable to examine a numerical dependent variable. Initially, we verified the normality assumption for the dependent variable within each group. If the ANOVA results are significant, which indicates that at least one group significantly differs from another, then post-hoc multiple comparisons can be conducted as demonstrated in Subsection 3.4.
+
+
+# 4. Linear mixed model
+
+We will use the `lme()` function to fit linear regression models on the log2 transformed gene_ace data, treating `day` as a fixed effect and `tooth` as a random effect. 
+
+
+**Your turn 4.1:** Fit two linear mixed models: the first one assumes that the random effects have the same slope but different intercepts, while the second one assumes that the random effects have different intercepts and slopes. Compare the two models based on their corrected Akaike Information Criterion (AIC) values.
+
+```{r}
+#Different intecept for random effect
+lmm_acefit2<-nlme::lme(log2(gene_ace) ~ day , 
+                       random= (~1 | tooth), data = teeth)
+
+#Different intecept and slope for random effect
+lmm_acefit3<-nlme::lme(log2(gene_ace) ~ day , 
+                       random= (~1+ day| tooth), data = teeth)
+
+# Compare two models
+MuMIn::AICc(lmm_acefit2,lmm_acefit3)
+
+summary(lmm_acefit2)
+```
+
+
+## Summary
+
+In Section 4, we investigated linear mixed models using the `ace` gene from our dataset. Linear mixed models are useful when there are blocking variables in the data that we do not want to evaluate the effects of. Here, we used the `lme()` function from the`nlme` R package to fit the linear mixed model. However, you can also use the `lmer()` function from the `lme4` R package.
+
+
+# 5. Testing many genes with limma
+
+In this section we look at fitting linear models to all genes in the data, which includes a total of 32,544 genes. We will use the package limma from Bioconductor. This is a very brief demonstration, and there is much more to this package. See the excellent [usersguide.pdf](https://bioconductor.org/packages/release/bioc/html/limma.html)
+
+### Load, normalize, log transform
+
+**Your turn 5.1:** Use the following R code to load the data, convert the read counts to Reads Per Million (RPM), and then apply a log2 transformation to the results. There are some concepts that we will only briefly touch on: trimmed mean of M-values (TMM) normalization is employed as a minor adjustment to the total number of reads in each sample (i.e., the library size). A small constant is added to the counts to prevent the calculation of log2(0). These steps are described in more detail in the [edgeR](https://www.bioconductor.org/packages/devel/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf) and [limma](https://bioconductor.org/packages/release/bioc/vignettes/limma/inst/doc/usersguide.pdf) manuals.
+
+```{r message=FALSE}
+counts_df <- read_csv("data/teeth-read-counts.csv")
+counts <- as.matrix(counts_df[,-1])
+rownames(counts) <- counts_df[[1]]
+
+#calculate TMM normalization factors
+dgelist <- calcNormFactors(DGEList(counts))
+
+#get the normalized counts
+log2_cpms <- cpm(dgelist, log=TRUE, prior.count=0.25)
+```
+
+There is chance of detecting differential expression in genes with very low read counts. Including these genes will require a larger False Discovery Rate correction, and also confuses limma's Empirical Bayes parameter estimation. Let's only retain genes with around 5 reads per sample or more.
+
+```{r}
+keep <- rowSums(counts>=5)==16
+log2_cpms_filtered <- log2_cpms[keep,]
+```
+
+#### Exercise 3: Examine the filtered genes
+
+How many genes were present before the filtering, and how many remain after the filtering?
+
+<button onclick="myFunction(&#39;q3&#39;)">
+
+Show solutions
+
+</button>
+
+::: {#q3 style="display:none"}
+
+#### Answer
+
+```{r}
+nrow(log2_cpms)
+nrow(log2_cpms_filtered)
+```
+:::
+
+<!-- end solutions -->
+
+### Fitting different models and exploring top genes
+
+**Your turn 5.2:** We use limma to fit a linear model to each gene with day as independent variable. The same model formula will be used in each case. limma does not automatically convert a formula into a model matrix, so we have to do this step manually. Here we are using a model formula following a different linear trend over time.
+
+```{r}
+X <- model.matrix(~ day, data=teeth)
+X
+fit <- lmFit(log2_cpms_filtered, X)
+fit$coefficients[1:5,]
+efit <- eBayes(fit)
+topTable(efit, n=5, coef = c("day"))
+```
+### Mixed effect models with limma
+
+**Your turn 5.3:** We will use the below code to model to tooth as a blocking variable.
+
+```{r}
+block <- teeth$tooth
+design <- model.matrix(~ day, data = teeth)
+dup_corrs <- duplicateCorrelation(log2_cpms_filtered,
+                                  design = design, block = block)
+fit <- lmFit(log2_cpms_filtered, X, block = block,
+             correlation = dup_corrs$consensus.correlation)
+efit <- eBayes(fit, trend=TRUE)
+topTable(efit, n=5, coef = c("day"))
+```
+
+#### Exercise 4: Fit linear models with limma with more independent variables.
+
+(A) Similar to section 5.2, use 'limma' to fit a linear model for each gene, with 'day', 'tooth', and their interactions as independent variables.
+
+(B) Extract the coefficient values for the first five genes.
+
+(C) Check top genes for each coefficient.
+
+
+<button onclick="myFunction(&#39;q4&#39;)">
+
+Show solutions
+
+</button>
+
+::: {#q4 style="display:none"}
+
+#### Answer
+(A)
+```{r}
+X <- model.matrix(~ tooth*day, data=teeth)
+fit <- lmFit(log2_cpms_filtered, X)
+```
+
+(B)
+```{r}
+fit$coefficients[1:5,]
+```
+
+(C)
+```{r}
+efit1 <- eBayes(fit, trend=TRUE)
+topTable(efit1,coef = c("day"), n=5)
+topTable(efit1,coef = c("toothupper"), n=5)
+topTable(efit1,coef = c("toothupper:day"), n=5)
+```
+:::
+
+<!-- end solutions -->
+
+**Your turn 5.4:** We will now plot the significant genes identified in Exercise 4 along with the log fold change and expression level.
+
+
+```{r fig6, fig.width=6,fig.height=5}
+all_results <- topTable(efit1,coef = c("day"), n=Inf)
+
+significant <- all_results$adj.P.Val <= 0.05
+
+ggplot(all_results, aes(x=AveExpr, y=logFC)) + 
+  geom_point(size=0.1, color="grey") +
+  geom_point(data=all_results[significant,], size=0.1)
+
+```
+
+**Your turn 5.5:** We will now plot the top gene.
+
+```{r fig7, fig.width=6,fig.height=5, message=FALSE}
+# Filter Tfap2b gene
+Tfap2b <- log2_cpms["Tfap2b",]
+
+# Fitting a linear model
+Tfap2b_fit <- lm(Tfap2b ~  day*tooth, data=teeth)
+
+# creating a set of values to be used to fit the line
+more_data <- expand.grid(
+  day=seq(14.3,18.2,by=0.01),
+  tooth=as_factor(c("lower","upper")))
+
+p <- ggplot(teeth,aes(x=day,group=tooth))
+more_ci <- cbind(more_data, 
+                 predict(Tfap2b_fit, more_data, interval="confidence"))
+p <- p + 
+      geom_ribbon(data=more_ci, aes(ymin=lwr,ymax=upr),alpha=0.1) + 
+      geom_line(data=more_ci,aes(y=fit,color=tooth))
+
+p + geom_point(aes(y=Tfap2b,color=tooth)) +
+    ylab("Tfap2b")
+
+```
+
+## Summary
+
+In Section 5, we delved into the limma package, a powerful tool for the analysis of gene expression data, particularly from microarray and RNA-Seq experiments. We began by fitting linear models to our data using limma. This approach allowed us to model the relationship between our gene expression data and independent variables. The linear models provided us with estimates of the effects of these variables on gene expression, as well as statistical tests for the significance of these effects. In addition to standard linear models, we also fitted linear mixed effect models with limma. These models are particularly useful when our data has blocking variables. We used the results of our models to explore the top genes in our dataset. These are the genes that showed the most significant effects.
+
+
+# 6. Session Info
+
+```{r }
+sessionInfo()
+```
+
