@@ -1,6 +1,6 @@
 # MIG workshop: Linear models
 
-**Authors: Saritha Kodikara, Kim-Anh L&#234; Cao**
+**Authors: Saritha Kodikara**
 
 **Tutors: Ilariya Tarasova, Yidi Deng**
 
