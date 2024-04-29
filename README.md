@@ -16,10 +16,10 @@ This repository includes material for our workshop 'Linear models'. This worksho
 ### Installation Requirements
 
 Install R first, then RStudio. Download the most recent version of R and RStudio using the links below:
-- [R](https://cran.r-project.org/)
+- [R](https://cran.r-project.org/) (Preferably R version > 4.0)
 - [RStudio](https://posit.co/download/rstudio-desktop/#download)
 
-Install the R packages (Preferably R version > 4.0).
+Install the R packages.
 Type the R command lines:
 ``` 
 # Install tidyverse package using CRAN
