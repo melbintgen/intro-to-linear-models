@@ -17,6 +17,7 @@ This repository includes material for our workshop 'Linear models'. This worksho
 ### Material
 
 [Click here]() to access the slides.
+
 [Click here]() to access the HTML workshop document.
 
 ### Data
