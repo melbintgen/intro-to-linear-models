@@ -16,7 +16,7 @@ This repository includes material for our workshop 'Linear models'. This worksho
 
 ### Material
 
-[Click here](https://melbintgen.github.io/intro-to-linear-models/Linear_models_slides.PDF) to access the slides.
+[Click here](https://melbintgen.github.io/intro-to-linear-models/Linear_model_slides.PDF) to access the slides.
 
 [Click here](https://melbintgen.github.io/intro-to-linear-models/linear_models.html) to access the HTML workshop document.
 
