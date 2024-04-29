@@ -26,4 +26,4 @@ All data used for the workshop are in [data.zip]().
 
 -----
 
-- This material was inspired from the workshop **[r-linear-abacbs2018](https://monashbioinformaticsplatform.github.io/r-linear-abacbs2018/topics/linear_models_abacbs2018.html)** from [Monash Bioinformatics](https://github.com/MonashBioinformaticsPlatform) and **[QCBS R workshops](https://r.qcbs.ca/workshop04/pres-en/workshop04-pres-en.html#1)** from [Quebec Centre for Biodiversity](https://r.qcbs.ca/). 
+- The materials were inspired from the workshop **[r-linear-abacbs2018](https://monashbioinformaticsplatform.github.io/r-linear-abacbs2018/topics/linear_models_abacbs2018.html)** from [Monash Bioinformatics](https://github.com/MonashBioinformaticsPlatform) and **[QCBS R workshops](https://r.qcbs.ca/workshop04/pres-en/workshop04-pres-en.html#1)** from [Quebec Centre for Biodiversity](https://r.qcbs.ca/). 
