@@ -13,6 +13,34 @@
 
 This repository includes material for our workshop 'Linear models'. This workshop will introduce the fundamental principles of linear models and linear mixed effect models, with hands-on applications for the analysis of gene expression data, using base and limma R packages.
 
+### Installation Requirements
+
+Install R first, then RStudio. Download the most recent version of R and RStudio using the links below:
+- [R](https://cran.r-project.org/)
+- [RStudio](https://posit.co/download/rstudio-desktop/#download)
+
+Install the R packages (Preferably R version > 4.0).
+Type the R command lines:
+``` 
+# Install tidyverse package using CRAN
+install.packages(c("tidyverse", "nlme", "ggpubr", "MuMIn"))
+
+# Install edgeR and limma packages using BiocManager
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+BiocManager::install(c("edgeR","limma"))
+
+# Test if packages have been installed
+library(tidyverse)  # working with data frames, plotting
+library(edgeR)      # cpm, etc -- RNA-Seq normalization
+library(limma)      # lmFit, etc -- fitting many models
+library(nlme)       # lme
+library(ggpubr)     # ggqqplot
+library(MuMIn)      # AICc
+
+```
+
 
 ### Material
 
