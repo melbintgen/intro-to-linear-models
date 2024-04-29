@@ -1,4 +1,4 @@
-# Linear models
+# MIG workshop: Linear models
 
 **Authors: Saritha Kodikara, Kim-Anh L&#234; Cao**
 
