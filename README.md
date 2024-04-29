@@ -18,7 +18,7 @@ This repository includes material for our workshop 'Linear models'. This worksho
 
 [Click here]() to access the slides.
 
-[Click here]() to access the HTML workshop document.
+[Click here](https://melbintgen.github.io/intro-to-linear-models/linear_models.html) to access the HTML workshop document.
 
 ### Data
 All data used for the workshop are in [data.zip]().
