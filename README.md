@@ -1,8 +1,7 @@
 # Linear models
 
-**Authors: Saritha Kodikara, Kim-Anh L&#234; Cao**
-
-**Tutors: Ilariya Tarasova, Yidi Deng **
+**Authors: Saritha Kodikara, Kim-Anh L&#234; Cao**\\
+**Tutors: Ilariya Tarasova, Yidi Deng**
 
 | Audience      | Prerequisites | Duration    |
 | ------------- | ------------- | ----------- |
