@@ -2,7 +2,7 @@
 
 **Authors: Saritha Kodikara**
 
-**Tutors: Ilariya Tarasova, Yidi Deng**
+**Tutors: Eva Wang**
 
 | Audience      | Prerequisites | Duration    |
 | ------------- | ------------- | ----------- |
