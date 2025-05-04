@@ -46,6 +46,7 @@ library(MuMIn)      # AICc
 
 [Click here](https://melbintgen.github.io/intro-to-linear-models/linear-models-master/Linear_model_slides.pdf) to access the slides.
 
+[Click here](https://melbintgen.github.io/intro-to-linear-models/linear-models-master/linear_models.R) to access the Rscript.
 
 [Click here](https://melbintgen.github.io/intro-to-linear-models/linear_models.html) to access the HTML workshop document.
 
