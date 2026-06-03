@@ -53,6 +53,9 @@ library(MuMIn)      # AICc
 ### Data
 All data used for the workshop are in [data.zip](https://melbintgen.github.io/intro-to-linear-models/data.zip).
 
+### License
+This repository is licensed under the GNU Affero General Public License v3.0.
+
 
 -----
 
